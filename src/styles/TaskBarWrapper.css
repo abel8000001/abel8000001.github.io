@@ -1,0 +1,10 @@
+.taskbarIcon {
+  padding-inline-start: var(--r95-space-6) !important;
+}
+
+.taskbarIcon img {
+  width: 32px;
+  height: 32px;
+  margin-right: var(--r95-space-10);
+  min-width: var(--r95-space-16);
+}

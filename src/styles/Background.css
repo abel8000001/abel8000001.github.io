@@ -1,0 +1,66 @@
+@font-face {
+  font-family: 'myCustomFont';
+  src: url('../assets/sabresharkacad.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.background {
+  background-image: url(../assets/background.png);
+  background-size: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+  z-index: -1;
+}
+
+#planet-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    width: 70vw;
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+}
+
+.marquee-container {
+  width: 100vw;
+  overflow: hidden;
+  white-space: nowrap;
+  position: absolute;
+  top: 45vh;
+  left: 0;
+  z-index: 10;
+  background: transparent;
+  pointer-events: none;
+}
+
+.marquee-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 90s linear infinite;
+}
+
+.marquee-text {
+  display: inline-block;
+  font-size: 4.5rem;
+  color: white;
+  font-family: 'myCustomFont', Tahoma, Geneva, Verdana, sans-serif;
+  padding-right: 40px;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
