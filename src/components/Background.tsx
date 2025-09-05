@@ -13,81 +13,111 @@ function Background() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let rafId: number
+    let rafId = 0
     const pixelSize = 2.7 // bigger -> more pixelated
     const speed = 30 // small-canvas pixels per second
+    const off = document.createElement('canvas')
+    const offCtx = off.getContext('2d')!
+    let start = performance.now()
+    let lastSmallW = 0
+    let lastSmallH = 0
+    let measuredTextW = 1
+
+    // cached display size (updated on resize) to avoid per-frame DOM reads
+    let dispW = 0
+    let dispH = 0
+    let pauseTime = 0
 
     function resize() {
-      if (!canvas) return;
+      if (!canvas) return
       const rect = canvas.getBoundingClientRect()
-      // keep canvas backing store same as CSS size for crisp drawing
-      canvas.width = Math.max(1, Math.floor(rect.width))
-      canvas.height = Math.max(1, Math.floor(rect.height))
+      const newW = Math.max(1, Math.floor(rect.width))
+      const newH = Math.max(1, Math.floor(rect.height))
+      // only update backing store when it actually changed
+      if (canvas.width !== newW || canvas.height !== newH) {
+        canvas.width = newW
+        canvas.height = newH
+        dispW = newW
+        dispH = newH
+        // update offscreen metrics for the new size
+        updateOffscreenIfNeeded(dispW, dispH)
+        // reset start so animation offset stays sensible after resize
+        start = performance.now()
+      } else {
+        dispW = newW
+        dispH = newH
+      }
     }
     resize()
     window.addEventListener('resize', resize)
 
-    const start = performance.now()
+    function updateOffscreenIfNeeded(dispWParam: number, dispHParam: number) {
+      const smallW = Math.max(1, Math.floor(dispWParam / pixelSize))
+      const smallH = Math.max(1, Math.floor(dispHParam / pixelSize))
+      if (smallW !== lastSmallW || smallH !== lastSmallH) {
+        lastSmallW = smallW
+        lastSmallH = smallH
+        off.width = smallW
+        off.height = smallH
+        // recompute font and metrics only when small size changes
+        const fontSize = Math.max(8, Math.floor(smallH * 0.5))
+        offCtx.font = `${fontSize}px myCustomFont, Tahoma, Geneva, Verdana, sans-serif`
+        offCtx.textBaseline = 'middle'
+        offCtx.fillStyle = 'white'
+        offCtx.strokeStyle = 'black'
+        offCtx.lineJoin = 'round'
+        offCtx.miterLimit = 2
+        offCtx.lineWidth = Math.max(1, Math.floor(fontSize * 0.16))
+        // measure text width once for the current small canvas scale
+        const m = offCtx.measureText(phrase)
+        measuredTextW = Math.max(1, Math.ceil(m.width))
+      }
+      return { smallW: lastSmallW, smallH: lastSmallH }
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        // pause animation
+        pauseTime = performance.now()
+        cancelAnimationFrame(rafId)
+      } else {
+        // resume; adjust start so elapsed continues from where it left off
+        const now = performance.now()
+        start += (now - pauseTime)
+        rafId = requestAnimationFrame(render)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     function render(now: number) {
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect()
-      const dispW = Math.max(1, Math.floor(rect.width))
-      const dispH = Math.max(1, Math.floor(rect.height))
-
-      // small offscreen canvas (low-res)
-      const smallW = Math.max(1, Math.floor(dispW / pixelSize))
-      const smallH = Math.max(1, Math.floor(dispH / pixelSize))
-
-      const off = document.createElement('canvas')
-      off.width = smallW
-      off.height = smallH
-      const offCtx = off.getContext('2d')!
+      if (!canvas) return
+      // use cached sizes updated by resize handler (avoid getBoundingClientRect per-frame)
+      const w = dispW || canvas.width
+      const h = dispH || canvas.height
+      const { smallW, smallH } = updateOffscreenIfNeeded(w, h)
       offCtx.clearRect(0, 0, smallW, smallH)
-
-      // text styling in offscreen pixels
-      const fontSize = Math.max(8, Math.floor(smallH * 0.5))
-      offCtx.font = `${fontSize}px myCustomFont, Tahoma, Geneva, Verdana, sans-serif`
-      offCtx.textBaseline = 'middle'
-      offCtx.fillStyle = 'white'
-      offCtx.strokeStyle = 'black'
-      offCtx.lineJoin = 'round'
-      offCtx.miterLimit = 2
-      offCtx.letterSpacing = '0.1rem'
-      offCtx.lineWidth = Math.max(1, Math.floor(fontSize * 0.16))
-
-      // measure single phrase width in small coords
-      const text = phrase
-      const m = offCtx.measureText(text)
-      const textW = Math.max(1, Math.ceil(m.width))
-
-      // compute offset (wrap)
       const elapsed = (now - start) / 1000
-      const offset = Math.floor((elapsed * speed) % textW)
-
-      // draw repeated text across offscreen
+      const offset = Math.floor((elapsed * speed) % measuredTextW)
+      // draw repeated text across offscreen (low-res)
       let x = -offset
       while (x < smallW) {
-        offCtx.strokeText(text, x, smallH / 2)
-        offCtx.fillText(text, x, smallH / 2)
-        x += textW
+        offCtx.strokeText(phrase, x, smallH / 2)
+        offCtx.fillText(phrase, x, smallH / 2)
+        x += measuredTextW
       }
-
       // draw the low-res offscreen canvas scaled up onto the visible canvas
       if (ctx) {
         ctx.imageSmoothingEnabled = false
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(off, 0, 0, canvas.width, canvas.height)
       }
-
       rafId = requestAnimationFrame(render)
     }
-
     rafId = requestAnimationFrame(render)
-
     return () => {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', resize)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 

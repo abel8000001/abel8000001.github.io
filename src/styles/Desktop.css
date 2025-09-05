@@ -1,0 +1,51 @@
+.desktopIcon {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.desktopIcon img {
+    width: 48px;
+    height: 48px;
+}
+
+#blog-icon {
+    top: 25vh;
+    left: 15vw;
+}
+
+#thoughts-icon {
+    top: 25vh;
+    right: 15vw;
+}
+
+/* Icon used in window titlebar/Modal icon */
+.windowIcon {
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 768px) {
+    .windowIcon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .desktopIcon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .desktopIcon img {
+        width: 40px;
+        height: 40px;
+    }
+}

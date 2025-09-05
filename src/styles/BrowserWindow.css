@@ -1,0 +1,135 @@
+.browser-window {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.r95_1txblt64 {
+    /* Menu bar toolbar */
+    /* menu bar toolbar - keep zero so top-most menu area stays tight */
+    padding: 0 !important;
+}
+
+.r95_1txblt63 {
+    /* Window inside container */
+    /* window inner container: allow a small horizontal inset so titlebar doesn't touch edges */
+    padding: 2px !important;
+}
+
+#toolbar {
+    display: flex;
+    align-items: center;
+    margin: 0 !important;
+    height: 50px;
+    width: calc(100% - 12px);
+    background-color: var(--r95-color-material);
+}
+
+#toolbar hr {
+    display: block;
+    width: 0px;
+    height: 36px;
+    margin: 0;
+    border: 0;
+    border-left: 1px solid var(--r95-color-borderDark);
+    border-right: 1px solid var(--r95-color-borderLightest);
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.toolbar-drag-handle {
+    display: flex;
+    width: 10px;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    align-self: stretch;
+    touch-action: none;
+}
+
+.toolbar-drag-handle::before {
+    height: 85%;
+    content: "";
+    width: 4px;
+    box-sizing: border-box;
+    border: 1px solid;
+    border-color: var(--r95-color-borderLightest) var(--r95-color-borderDark) var(--r95-color-borderDark) var(--r95-color-borderLightest);
+}
+
+#toolbar .r95_1bzq74l0 {
+    width: 60px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: none;
+    padding: 0 !important;
+
+/* Title alignment inside the Modal's TitleBar: scope to browser modal to avoid global overrides */
+.browser-window ~ .react95-modal .r95_title,
+.browser-window .r95_title,
+.browser-window .title {
+    /* ensure title text sits to the right of the window icon instead of centered */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-start;
+}
+
+/* If the TitleBar uses a specific inner element for the title text, prefer aligning it left within the title area */
+.browser-window .r95_titleText,
+.browser-window .titleText {
+    text-align: left !important;
+}
+}
+
+#toolbar .r95_1bzq74l0:hover {
+    box-shadow:
+        inset 1px 1px 0px 1px var(--r95-color-borderLightest),
+        inset 0 0 0 1px var(--r95-color-borderDark),
+        1px 1px 0 0px var(--r95-color-borderDarkest);
+}
+
+.browserIconImage,
+.browserIcon img {
+    width: 20px;
+    height: 20px;
+    image-rendering: pixelated;
+}
+
+#address-bar {
+    width: 100%;
+    height: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+label[for="address"] {
+    margin-right: 5px;
+    font-size: 13px;
+}
+
+#address-compound-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+#address-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 2px;
+}
+
+#address {
+    flex-grow: 1;
+    width: 100%;
+    box-sizing: border-box;
+}

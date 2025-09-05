@@ -1,5 +1,14 @@
 .taskbarIcon {
-  padding-inline-start: var(--r95-space-6) !important;
+    position: relative;
+    display: flex;
+    align-items: center;
+    -webkit-user-select: none;
+    user-select: none;
+    padding-inline-start: var(--r95-space-6) !important;
+    margin: 0;
+    padding-block: 0.25rem;
+    padding-inline: 0.5rem;
+    color: var(--r95-color-materialText, #000);
 }
 
 .taskbarIcon img {

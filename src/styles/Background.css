@@ -28,6 +28,11 @@
   height: 70vh;
   display: flex;
   justify-content: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 .marquee-canvas {
@@ -41,8 +46,6 @@
   pointer-events: none;
   image-rendering: pixelated; /* helps in some browsers for crisp-scaled visuals */
 }
-
-
 
 @keyframes marquee {
   0% {
