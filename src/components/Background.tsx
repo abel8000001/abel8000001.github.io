@@ -22,11 +22,24 @@ function Background() {
     let lastSmallW = 0
     let lastSmallH = 0
     let measuredTextW = 1
-
-    // cached display size (updated on resize) to avoid per-frame DOM reads
     let dispW = 0
     let dispH = 0
     let pauseTime = 0
+    let fontLoaded = false
+
+    async function waitForFont() {
+      try {
+        await document.fonts.load('16px myCustomFont')
+        fontLoaded = true
+        rafId = requestAnimationFrame(render)
+      } catch (error) {
+        // Fallback if font loading fails
+        setTimeout(() => {
+          fontLoaded = true
+          rafId = requestAnimationFrame(render)
+        }, 100)
+      }
+    }
 
     function resize() {
       if (!canvas) return
@@ -90,7 +103,7 @@ function Background() {
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     function render(now: number) {
-      if (!canvas) return
+      if (!canvas || !fontLoaded) return
       // use cached sizes updated by resize handler (avoid getBoundingClientRect per-frame)
       const w = dispW || canvas.width
       const h = dispH || canvas.height
@@ -114,6 +127,9 @@ function Background() {
       rafId = requestAnimationFrame(render)
     }
     rafId = requestAnimationFrame(render)
+
+    waitForFont()
+
     return () => {
       cancelAnimationFrame(rafId)
       window.removeEventListener('resize', resize)
