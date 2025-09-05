@@ -4,7 +4,7 @@ import { Button, Modal as RawModal, TitleBar } from '@react95/core';
 // Some @react95 exports are typed as forwardRef render functions and don't match
 // the JSX component signature. Cast to any locally and use the Content subcomponent
 // through a dedicated variable that we render in JSX to avoid `Modal.Content` typing issues.
-const Modal: React.ComponentType<any> = RawModal as unknown as React.ComponentType<any>;
+const Modal: any = RawModal;
 const ModalContent: React.ComponentType<any> = (RawModal as any).Content;
 import BlogIcon from '../assets/blog-icon.png';
 import IeIcon from '../assets/thoughts-icon.png';
@@ -26,6 +26,7 @@ const Desktop: React.FC = () => {
     const handleOpenBlogWindow = React.useCallback(() => setShowBlogWindow(true), []);
     const handleCloseThoughtsWindow = React.useCallback(() => setShowThoughtsWindow(false), []);
     const handleOpenThoughtsWindow = React.useCallback(() => setShowThoughtsWindow(true), []);
+
 
     // For the radio buttons in the Blog window (kept for compatibility)
     const [selectedOption] = React.useState<string>('medium');
@@ -49,6 +50,7 @@ const Desktop: React.FC = () => {
 
             {showBlogWindow && (
                 <Modal
+                    id="blog-window"
                     width={isMobile ? '95vw' : '90vw'}
                     height={isMobile ? '85vh' : '90vh'}
                     title="Blog"
@@ -58,8 +60,8 @@ const Desktop: React.FC = () => {
                         defaultPosition: isMobile ? { x: 10, y: 10 } : { x: 60, y: -30 },
                     }}
                     titleBarOptions={[
-                        <TitleBar.Minimize key="minimize" />,
-                        <TitleBar.Restore key="restore" />,
+                        <Modal.Minimize key="minimize" />,
+                        <TitleBar.Maximize key="maximize" />,
                         <TitleBar.Close key="close" onClick={handleCloseBlogWindow} />,
                     ]}
                     menu={[
@@ -80,6 +82,7 @@ const Desktop: React.FC = () => {
 
             {showThoughtsWindow && (
                 <Modal
+                    id="thoughts-window"
                     width={isMobile ? '95vw' : '90vw'}
                     height={isMobile ? '85vh' : '90vh'}
                     title="Thoughts"
@@ -89,8 +92,8 @@ const Desktop: React.FC = () => {
                         defaultPosition: isMobile ? { x: 10, y: 20 } : { x: 45, y: 10 },
                     }}
                     titleBarOptions={[
-                        <TitleBar.Minimize key="minimize" />,
-                        <TitleBar.Restore key="restore" />,
+                        <Modal.Minimize key="minimize" />,
+                        <TitleBar.Maximize key="maximize" />,
                         <TitleBar.Close key="close" onClick={handleCloseThoughtsWindow} />,
                     ]}
                     menu={[
