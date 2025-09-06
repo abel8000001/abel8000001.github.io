@@ -33,6 +33,25 @@
     height: 16px;
 }
 
+/* Maximized window positioning fix - target the modal wrapper */
+[id="blog-window"][style*="100vw"],
+[id="thoughts-window"][style*="100vw"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translate(0px, 0px) !important;
+}
+
+/* Additional targeting for React95 modal structure */
+div[style*="100vw"] {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: translate(0px, 0px) !important;
+}
+
 @media (max-width: 768px) {
     .windowIcon {
         width: 18px;

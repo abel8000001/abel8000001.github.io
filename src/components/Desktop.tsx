@@ -32,9 +32,17 @@ const Desktop: React.FC = () => {
 
     // Calculate percentage-based positions for responsive window placement
     // Automatically adjusts for Modal's built-in spacing so 0,0 = true top-left edge
-    const getResponsivePosition = React.useCallback((offsetXPercent: number, offsetYPercent: number) => {
+    const getResponsivePosition = React.useCallback((offsetXPercent: number, offsetYPercent: number, isMaximized: boolean = false) => {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+        
+        // For maximized windows, position at exactly 0,0 with no offset correction
+        if (isMaximized) {
+            return {
+                x: 0,
+                y: 0,
+            };
+        }
         
         // Apply automatic correction for Modal's built-in spacing (fixed pixels, not percentage)
         // The Modal has a fixed pixel offset, so we subtract a fixed amount
@@ -58,14 +66,7 @@ const Desktop: React.FC = () => {
     // Maximize/Restore handlers for Blog window
     const handleMaximizeBlogWindow = React.useCallback(() => {
         setIsBlogMaximized(true);
-        // Move window to top-left after maximize
-        setTimeout(() => {
-            if (blogModalRef.current) {
-                const position = getResponsivePosition(0, 0);
-                blogModalRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
-            }
-        }, 0);
-    }, [getResponsivePosition]);
+    }, []);
 
     const handleRestoreBlogWindow = React.useCallback(() => {
         setIsBlogMaximized(false);
@@ -74,18 +75,34 @@ const Desktop: React.FC = () => {
     // Maximize/Restore handlers for Thoughts window
     const handleMaximizeThoughtsWindow = React.useCallback(() => {
         setIsThoughtsMaximized(true);
-        // Move window to top-left after maximize
-        setTimeout(() => {
-            if (thoughtsModalRef.current) {
-                const position = getResponsivePosition(0, 0);
-                thoughtsModalRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
-            }
-        }, 0);
-    }, [getResponsivePosition]);
+    }, []);
 
     const handleRestoreThoughtsWindow = React.useCallback(() => {
         setIsThoughtsMaximized(false);
     }, []);
+
+    // Effect to handle window positioning when maximized state changes
+    React.useEffect(() => {
+        if (isBlogMaximized && blogModalRef.current) {
+            // Force position to top-left for maximized blog window
+            const modalElement = blogModalRef.current;
+            modalElement.style.position = 'fixed';
+            modalElement.style.top = '0px';
+            modalElement.style.left = '0px';
+            modalElement.style.transform = 'translate(0px, 0px)';
+        }
+    }, [isBlogMaximized]);
+
+    React.useEffect(() => {
+        if (isThoughtsMaximized && thoughtsModalRef.current) {
+            // Force position to top-left for maximized thoughts window
+            const modalElement = thoughtsModalRef.current;
+            modalElement.style.position = 'fixed';
+            modalElement.style.top = '0px';
+            modalElement.style.left = '0px';
+            modalElement.style.transform = 'translate(0px, 0px)';
+        }
+    }, [isThoughtsMaximized]);
 
     const handleCloseBlogWindow = React.useCallback(() => setShowBlogWindow(false), []);
     const handleOpenBlogWindow = React.useCallback(() => setShowBlogWindow(true), []);
@@ -115,6 +132,7 @@ const Desktop: React.FC = () => {
 
             {showBlogWindow && (
                 <Modal
+                    key={`blog-window-${isBlogMaximized ? 'maximized' : 'normal'}`}
                     ref={blogModalRef}
                     id="blog-window"
                     width={isBlogMaximized ? getMaximizedDimensions().width : (isMobile ? '95vw' : '90vw')}
@@ -123,7 +141,9 @@ const Desktop: React.FC = () => {
                     zIndex={1}
                     icon={<img className='windowIcon' src={BlogIcon} alt='Blog' width={16} height={16} />}
                     dragOptions={{
-                        defaultPosition: isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(0, 0),
+                        defaultPosition: isBlogMaximized 
+                            ? getResponsivePosition(0, 0, true)
+                            : (isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(0, 0)),
                     }}
                     titleBarOptions={[
                         <Modal.Minimize key="minimize" />,
@@ -150,6 +170,7 @@ const Desktop: React.FC = () => {
 
             {showThoughtsWindow && (
                 <Modal
+                    key={`thoughts-window-${isThoughtsMaximized ? 'maximized' : 'normal'}`}
                     ref={thoughtsModalRef}
                     id="thoughts-window"
                     width={isThoughtsMaximized ? getMaximizedDimensions().width : (isMobile ? '95vw' : '90vw')}
@@ -158,7 +179,9 @@ const Desktop: React.FC = () => {
                     zIndex={1}
                     icon={<img className='windowIcon' src={IeIcon} alt='Thoughts' width={16} height={16} />}
                     dragOptions={{
-                        defaultPosition: isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(10, 8),
+                        defaultPosition: isThoughtsMaximized 
+                            ? getResponsivePosition(0, 0, true)
+                            : (isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(10, 8)),
                     }}
                     titleBarOptions={[
                         <Modal.Minimize key="minimize" />,
