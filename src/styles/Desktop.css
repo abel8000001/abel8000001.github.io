@@ -67,4 +67,12 @@ div[style*="100vw"] {
         width: 40px;
         height: 40px;
     }
+
+    #blog-icon {
+        top: 20vh;
+    }
+
+    #thoughts-icon {
+        top: 20vh;
+    }
 }
