@@ -136,14 +136,15 @@ const Desktop: React.FC = () => {
                     ref={blogModalRef}
                     id="blog-window"
                     width={isBlogMaximized ? getMaximizedDimensions().width : (isMobile ? '95vw' : '90vw')}
-                    height={isBlogMaximized ? getMaximizedDimensions().height : (isMobile ? '85vh' : '90vh')}
+                    height={isBlogMaximized ? getMaximizedDimensions().height : (isMobile ? '90vh' : '90vh')}
                     title="Blog"
                     zIndex={1}
                     icon={<img className='windowIcon' src={BlogIcon} alt='Blog' width={16} height={16} />}
                     dragOptions={{
-                        defaultPosition: isBlogMaximized 
+                        disabled: isBlogMaximized,
+                        defaultPosition: isBlogMaximized
                             ? getResponsivePosition(0, 0, true)
-                            : (isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(0, 0)),
+                            : (isMobile ? getResponsivePosition(2, 2) : getResponsivePosition(5, 3)),
                     }}
                     titleBarOptions={[
                         <Modal.Minimize key="minimize" />,
@@ -174,14 +175,15 @@ const Desktop: React.FC = () => {
                     ref={thoughtsModalRef}
                     id="thoughts-window"
                     width={isThoughtsMaximized ? getMaximizedDimensions().width : (isMobile ? '95vw' : '90vw')}
-                    height={isThoughtsMaximized ? getMaximizedDimensions().height : (isMobile ? '85vh' : '90vh')}
+                    height={isThoughtsMaximized ? getMaximizedDimensions().height : (isMobile ? '90vh' : '90vh')}
                     title="Thoughts"
                     zIndex={1}
                     icon={<img className='windowIcon' src={IeIcon} alt='Thoughts' width={16} height={16} />}
                     dragOptions={{
+                        disabled: isThoughtsMaximized,
                         defaultPosition: isThoughtsMaximized 
                             ? getResponsivePosition(0, 0, true)
-                            : (isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(10, 8)),
+                            : (isMobile ? getResponsivePosition(2, 3) : getResponsivePosition(6, 4)),
                     }}
                     titleBarOptions={[
                         <Modal.Minimize key="minimize" />,
