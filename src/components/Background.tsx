@@ -31,15 +31,18 @@ function Background() {
 
     async function waitForFont() {
       try {
+        // Load the font
         await document.fonts.load('16px myCustomFont')
+        await document.fonts.ready
+        
         fontLoaded = true
         rafId = requestAnimationFrame(render)
-      } catch (error) {
-        // Fallback if font loading fails
+      } catch {
+        // Simple fallback: wait a bit and start anyway
         setTimeout(() => {
           fontLoaded = true
           rafId = requestAnimationFrame(render)
-        }, 100)
+        }, 500) // Half second fallback
       }
     }
 
@@ -76,6 +79,7 @@ function Background() {
         off.height = smallH
         // recompute font and metrics only when small size changes
         const fontSize = Math.max(8, Math.floor(smallH * 0.5))
+        
         offCtx.font = `${fontSize}px myCustomFont, Tahoma, Geneva, Verdana, sans-serif`
         offCtx.textBaseline = 'middle'
         offCtx.fillStyle = 'white'
@@ -83,9 +87,12 @@ function Background() {
         offCtx.lineJoin = 'round'
         offCtx.miterLimit = 2
         offCtx.lineWidth = isMobile ? Math.max(1, Math.floor(fontSize * 0.23)) : Math.max(1, Math.floor(fontSize * 0.16))
-        // measure text width once for the current small canvas scale
-        const m = offCtx.measureText(phrase)
-        measuredTextW = Math.max(1, Math.ceil(m.width))
+        
+        // SOLUTION: Use character-based spacing instead of measureText()
+        // This eliminates the browser font measurement timing issues completely
+        const avgCharWidth = fontSize * 0.7 // Conservative estimate for condensed bold font
+        const spacing = fontSize * 0.1 // Add some spacing between repetitions
+        measuredTextW = Math.ceil(((phrase.length + 0.6) * avgCharWidth) + spacing)
       }
       return { smallW: lastSmallW, smallH: lastSmallH }
     }
@@ -106,6 +113,14 @@ function Background() {
 
     function render(now: number) {
       if (!canvas || !fontLoaded) return
+      
+      // Additional font check before rendering to prevent glitches
+      if (!document.fonts.check('16px myCustomFont')) {
+        // Font still not ready, skip this frame
+        rafId = requestAnimationFrame(render)
+        return
+      }
+      
       // use cached sizes updated by resize handler (avoid getBoundingClientRect per-frame)
       const w = dispW || canvas.width
       const h = dispH || canvas.height

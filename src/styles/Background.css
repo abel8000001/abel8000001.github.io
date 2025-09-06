@@ -3,6 +3,7 @@
   src: url('../assets/sabresharkboldcond.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+  font-display: block; /* Prevent FOIT (Flash of Invisible Text) */
 }
 
 .background {

@@ -9,7 +9,6 @@ function TaskBarWrapper() {
         <TaskBar
                 list={
                     <List>
-                        {/* @ts-expect-error component works even if it's not fully compatible with ts*/}
                         <TitleBar title='Made with <3 by Abel' />
                         <a href='https://github.com/abel8000001' target='_blank' rel='noopener noreferrer'>
                             <List.Item className='taskbarIcon' id='github' icon={<img src={githubIcon} alt="GitHub" />}>
