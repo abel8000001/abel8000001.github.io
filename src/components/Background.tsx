@@ -14,7 +14,9 @@ function Background() {
     if (!ctx) return
 
     let rafId = 0
-    const pixelSize = 2.7 // bigger -> more pixelated
+    // Detect mobile devices and use different pixel sizes
+    const isMobile = window.innerWidth <= 768
+    const pixelSize = isMobile ? 2 : 2.7
     const speed = 30 // small-canvas pixels per second
     const off = document.createElement('canvas')
     const offCtx = off.getContext('2d')!
@@ -80,7 +82,7 @@ function Background() {
         offCtx.strokeStyle = 'black'
         offCtx.lineJoin = 'round'
         offCtx.miterLimit = 2
-        offCtx.lineWidth = Math.max(1, Math.floor(fontSize * 0.16))
+        offCtx.lineWidth = isMobile ? Math.max(1, Math.floor(fontSize * 0.23)) : Math.max(1, Math.floor(fontSize * 0.16))
         // measure text width once for the current small canvas scale
         const m = offCtx.measureText(phrase)
         measuredTextW = Math.max(1, Math.ceil(m.width))

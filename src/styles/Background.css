@@ -56,3 +56,16 @@
     transform: translateX(-50%);
   }
 }
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  #planet-screen {
+    width: 40vw;
+    height: 40vh;
+  }
+
+  .marquee-canvas {
+    height: 6rem;
+    top: 45vh;
+  }
+}
