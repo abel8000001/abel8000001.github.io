@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button, Modal as RawModal, TitleBar } from '@react95/core';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // Some @react95 exports are typed as forwardRef render functions and don't match
@@ -21,6 +21,71 @@ import HelpMenu from './MenuBar/HelpMenu.tsx';
 const Desktop: React.FC = () => {
     const [showBlogWindow, setShowBlogWindow] = React.useState<boolean>(false);
     const [showThoughtsWindow, setShowThoughtsWindow] = React.useState<boolean>(false);
+    
+    // Maximize state for windows
+    const [isBlogMaximized, setIsBlogMaximized] = React.useState<boolean>(false);
+    const [isThoughtsMaximized, setIsThoughtsMaximized] = React.useState<boolean>(false);
+    
+    // Refs for modal instances to access draggable functionality
+    const blogModalRef = useRef<HTMLDivElement>(null);
+    const thoughtsModalRef = useRef<HTMLDivElement>(null);
+
+    // Calculate percentage-based positions for responsive window placement
+    // Automatically adjusts for Modal's built-in spacing so 0,0 = true top-left edge
+    const getResponsivePosition = React.useCallback((offsetXPercent: number, offsetYPercent: number) => {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        // Apply automatic correction for Modal's built-in spacing (fixed pixels, not percentage)
+        // The Modal has a fixed pixel offset, so we subtract a fixed amount
+        const modalVerticalOffsetPx = 50;
+        
+        return {
+            x: viewportWidth * (offsetXPercent / 100),
+            y: (viewportHeight * (offsetYPercent / 100)) - modalVerticalOffsetPx,
+        };
+    }, []);
+
+    // Get maximized window dimensions (full screen minus taskbar)
+    const getMaximizedDimensions = React.useCallback(() => {
+        const taskbarHeight = 28; // TaskBar height from React95 (from TaskBar.tsx: h="28px")
+        return {
+            width: '100vw',
+            height: `calc(100vh - ${taskbarHeight}px)`,
+        };
+    }, []);
+
+    // Maximize/Restore handlers for Blog window
+    const handleMaximizeBlogWindow = React.useCallback(() => {
+        setIsBlogMaximized(true);
+        // Move window to top-left after maximize
+        setTimeout(() => {
+            if (blogModalRef.current) {
+                const position = getResponsivePosition(0, 0);
+                blogModalRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
+            }
+        }, 0);
+    }, [getResponsivePosition]);
+
+    const handleRestoreBlogWindow = React.useCallback(() => {
+        setIsBlogMaximized(false);
+    }, []);
+
+    // Maximize/Restore handlers for Thoughts window
+    const handleMaximizeThoughtsWindow = React.useCallback(() => {
+        setIsThoughtsMaximized(true);
+        // Move window to top-left after maximize
+        setTimeout(() => {
+            if (thoughtsModalRef.current) {
+                const position = getResponsivePosition(0, 0);
+                thoughtsModalRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`;
+            }
+        }, 0);
+    }, [getResponsivePosition]);
+
+    const handleRestoreThoughtsWindow = React.useCallback(() => {
+        setIsThoughtsMaximized(false);
+    }, []);
 
     const handleCloseBlogWindow = React.useCallback(() => setShowBlogWindow(false), []);
     const handleOpenBlogWindow = React.useCallback(() => setShowBlogWindow(true), []);
@@ -50,18 +115,21 @@ const Desktop: React.FC = () => {
 
             {showBlogWindow && (
                 <Modal
+                    ref={blogModalRef}
                     id="blog-window"
-                    width={isMobile ? '95vw' : '90vw'}
-                    height={isMobile ? '85vh' : '90vh'}
+                    width={isBlogMaximized ? getMaximizedDimensions().width : (isMobile ? '95vw' : '90vw')}
+                    height={isBlogMaximized ? getMaximizedDimensions().height : (isMobile ? '85vh' : '90vh')}
                     title="Blog"
                     zIndex={1}
                     icon={<img className='windowIcon' src={BlogIcon} alt='Blog' width={16} height={16} />}
                     dragOptions={{
-                        defaultPosition: isMobile ? { x: 10, y: 10 } : { x: 60, y: -30 },
+                        defaultPosition: isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(0, 0),
                     }}
                     titleBarOptions={[
                         <Modal.Minimize key="minimize" />,
-                        <TitleBar.Maximize key="maximize" />,
+                        isBlogMaximized 
+                            ? <TitleBar.Restore key="restore" onClick={handleRestoreBlogWindow} />
+                            : <TitleBar.Maximize key="maximize" onClick={handleMaximizeBlogWindow} />,
                         <TitleBar.Close key="close" onClick={handleCloseBlogWindow} />,
                     ]}
                     menu={[
@@ -82,18 +150,21 @@ const Desktop: React.FC = () => {
 
             {showThoughtsWindow && (
                 <Modal
+                    ref={thoughtsModalRef}
                     id="thoughts-window"
-                    width={isMobile ? '95vw' : '90vw'}
-                    height={isMobile ? '85vh' : '90vh'}
+                    width={isThoughtsMaximized ? getMaximizedDimensions().width : (isMobile ? '95vw' : '90vw')}
+                    height={isThoughtsMaximized ? getMaximizedDimensions().height : (isMobile ? '85vh' : '90vh')}
                     title="Thoughts"
                     zIndex={1}
                     icon={<img className='windowIcon' src={IeIcon} alt='Thoughts' width={16} height={16} />}
                     dragOptions={{
-                        defaultPosition: isMobile ? { x: 10, y: 20 } : { x: 45, y: 10 },
+                        defaultPosition: isMobile ? getResponsivePosition(0, 0) : getResponsivePosition(10, 8),
                     }}
                     titleBarOptions={[
                         <Modal.Minimize key="minimize" />,
-                        <TitleBar.Maximize key="maximize" />,
+                        isThoughtsMaximized 
+                            ? <TitleBar.Restore key="restore" onClick={handleRestoreThoughtsWindow} />
+                            : <TitleBar.Maximize key="maximize" onClick={handleMaximizeThoughtsWindow} />,
                         <TitleBar.Close key="close" onClick={handleCloseThoughtsWindow} />,
                     ]}
                     menu={[
