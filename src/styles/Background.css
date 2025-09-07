@@ -12,8 +12,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100ddvw;
-  height: 100ddvh;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   margin: 0;
   z-index: -1;
@@ -21,12 +21,12 @@
 
 #planet-screen {
   position: absolute;
-  top: 50dvh;
-  left: 50dvw;
+  top: 50vh;
+  left: 50vw;
   transform: translate(-50%, -50%);
   z-index: -1;
-  width: 70dvw;
-  height: 70dvh;
+  width: 70vw;
+  height: 70vh;
   display: flex;
   justify-content: center;
   -webkit-user-select: none;
@@ -38,9 +38,9 @@
 
 .marquee-canvas {
   position: absolute;
-  top: 40dvh;
+  top: 40vh;
   left: 0;
-  width: 100dvw;
+  width: 100vw;
   height: 9rem; /* adjust to desired height */
   z-index: -1;
   background: transparent;
@@ -61,12 +61,12 @@
 /* Mobile styles */
 @media (max-width: 768px) {
   #planet-screen {
-    width: 40dvw;
-    height: 40dvh;
+    width: 40vw;
+    height: 40vh;
   }
 
   .marquee-canvas {
     height: 6rem;
-    top: 45dvh;
+    top: 45vh;
   }
 }
